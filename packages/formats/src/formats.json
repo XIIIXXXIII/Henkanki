@@ -1,10 +1,11 @@
 [
-  {"id":"png","extension":"png","mime":"image/png","category":"image","outputs":["jpg","webp","pdf"]},
-  {"id":"jpg","extension":"jpg","mime":"image/jpeg","category":"image","outputs":["png","webp","pdf"]},
-  {"id":"webp","extension":"webp","mime":"image/webp","category":"image","outputs":["png","jpg"]},
-  {"id":"json","extension":"json","mime":"application/json","category":"text","outputs":["yaml","txt"]},
-  {"id":"yaml","extension":"yaml","mime":"application/yaml","category":"text","outputs":["json","txt"]},
-  {"id":"csv","extension":"csv","mime":"text/csv","category":"text","outputs":["json","md"]},
-  {"id":"md","extension":"md","mime":"text/markdown","category":"text","outputs":["html","txt"]},
-  {"id":"txt","extension":"txt","mime":"text/plain","category":"text","outputs":["md","html"]}
+  {"id": "png", "extension": "png", "mime": "image/png", "category": "image", "outputs": ["jpg", "webp", "pdf"]},
+  {"id": "jpg", "extension": "jpg", "mime": "image/jpeg", "category": "image", "outputs": ["png", "webp", "pdf"]},
+  {"id": "webp", "extension": "webp", "mime": "image/webp", "category": "image", "outputs": ["png", "jpg"]},
+  {"id": "json", "extension": "json", "mime": "application/json", "category": "text", "outputs": ["yaml", "txt", "csv"]},
+  {"id": "yaml", "extension": "yaml", "mime": "application/x-yaml", "category": "text", "outputs": ["json", "txt"]},
+  {"id": "csv", "extension": "csv", "mime": "text/csv", "category": "text", "outputs": ["json", "md", "txt"]},
+  {"id": "md", "extension": "md", "mime": "text/markdown", "category": "text", "outputs": ["html", "txt"]},
+  {"id": "html", "extension": "html", "mime": "text/html", "category": "text", "outputs": ["md", "txt"]},
+  {"id": "txt", "extension": "txt", "mime": "text/plain", "category": "text", "outputs": ["md", "html", "json", "yaml", "csv"]}
 ]
