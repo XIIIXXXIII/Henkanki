@@ -1,0 +1,1 @@
+{"name":"henkanki","version":"0.1.0","private":true,"description":"Local-first universal file converter monorepo.","type":"module","scripts":{"check":"node tools/check.mjs","test":"node tools/check.mjs","dev:web":"node apps/web/server.mjs","cli":"node apps/cli/henkanki.mjs"},"bin":{"henkanki":"apps/cli/henkanki.mjs"},"engines":{"node":">=18"},"license":"MIT"}

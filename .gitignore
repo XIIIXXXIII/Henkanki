@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+vendor/
+
+# Build outputs
+dist/
+build/
+target/
+out/
+release/
+*.log
+
+# Platform artifacts
+*.exe
+*.msi
+*.dmg
+*.app
+*.AppImage
+*.deb
+*.rpm
+*.apk
+*.aab
+*.ipa
+*.hpkg
+*.wasm
+
+# Local/editor state
+.env
+.env.*
+!.env.example
+.DS_Store
+.idea/
+.vscode/
