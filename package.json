@@ -1,1 +1,65 @@
-{"name":"henkanki","version":"0.1.0","private":true,"description":"Local-first universal file converter monorepo.","type":"module","scripts":{"check":"node tools/check.mjs","test":"node tools/check.mjs","dev:web":"node apps/web/server.mjs","cli":"node apps/cli/henkanki.mjs"},"bin":{"henkanki":"apps/cli/henkanki.mjs"},"engines":{"node":">=18"},"license":"MIT"}
+{
+  "name": "henkanki",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Local-first universal file conversion tool. Convert JSON, YAML, CSV, Markdown, HTML, XML, TOML, INI, PDF, images, video, audio, documents, and more - all locally on your device.",
+  "type": "module",
+  "scripts": {
+    "check": "node tools/check.mjs",
+    "test": "node tools/check.mjs",
+    "test:watch": "nodemon --watch packages --watch apps --ext mjs,json --exec \"npm run check\"",
+    "dev:web": "node apps/web/server.mjs",
+    "dev:cli": "node apps/cli/henkanki.mjs",
+    "start": "node apps/cli/henkanki.mjs",
+    "build": "npm run build:web",
+    "build:web": "echo 'Web build not implemented yet'",
+    "build:desktop": "cd apps/desktop && cargo build --release",
+    "build:mobile": "cd apps/mobile && npm run build",
+    "lint": "echo 'Linting not implemented yet'",
+    "format": "echo 'Formatting not implemented yet'",
+    "desktop:run": "cd apps/desktop && cargo run",
+    "mobile:add:android": "cd apps/mobile && npm run add:android",
+    "mobile:add:ios": "cd apps/mobile && npm run add:ios",
+    "mobile:run:android": "cd apps/mobile && npm run run:android",
+    "mobile:run:ios": "cd apps/mobile && npm run run:ios"
+  },
+  "bin": {
+    "henkanki": "apps/cli/henkanki.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "file-converter",
+    "local-first",
+    "offline",
+    "json",
+    "yaml",
+    "csv",
+    "markdown",
+    "html",
+    "converter",
+    "pwa",
+    "pdf",
+    "image",
+    "video",
+    "audio",
+    "document",
+    "desktop",
+    "mobile"
+  ],
+  "author": "XIIIXXXIII",
+  "license": "MIT",
+  "dependencies": {
+    "prompts": "^2.4.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ]
+}

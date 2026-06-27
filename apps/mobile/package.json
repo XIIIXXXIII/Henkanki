@@ -1,0 +1,33 @@
+{
+  "name": "henkanki-mobile",
+  "version": "0.2.0",
+  "description": "Henkanki Mobile - Local-first file converter for iOS and Android",
+  "main": "index.html",
+  "scripts": {
+    "start": "capacitor run android",
+    "build": "npm run build:web && capacitor copy",
+    "sync": "capacitor sync",
+    "open:android": "capacitor open android",
+    "open:ios": "capacitor open ios",
+    "add:android": "capacitor add android",
+    "add:ios": "capacitor add ios"
+  },
+  "dependencies": {
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/ios": "^6.0.0",
+    "@capacitor/filesystem": "^6.0.0",
+    "@capacitor/file-opener": "^6.0.0",
+    "@capacitor/share": "^6.0.0",
+    "@capacitor/camera": "^6.0.0",
+    "@capacitor/preferences": "^6.0.0"
+  },
+  "devDependencies": {},
+  "capacitor": {
+    "appId": "com.henkanki.app",
+    "appName": "Henkanki",
+    "webDir": "../web",
+    "bundledWebRuntime": false
+  }
+}

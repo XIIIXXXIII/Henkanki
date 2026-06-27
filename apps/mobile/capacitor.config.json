@@ -1,0 +1,55 @@
+{
+  "appId": "com.henkanki.app",
+  "appName": "Henkanki",
+  "webDir": "../web",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "plugins": {
+    "Filesystem": {
+      "permissions": ["read", "write"]
+    },
+    "FileOpener": {},
+    "Share": {},
+    "Camera": {},
+    "PhotoLibrary": {}
+  },
+  "cordova": {
+    "preferences": {
+      "ScrollEnabled": "false",
+      "android-minSdkVersion": "21",
+      "BackupWebStorage": "none",
+      "SplashMaintainAspectRatio": "true",
+      "FadeSplashScreenDuration": "300",
+      "SplashShowOnlyFirstTime": "false",
+      "SplashScreen": "screen",
+      "SplashScreenDelay": "3000",
+      "AutoHideSplashScreen": "true",
+      "ShowSplashScreenSpinner": "false",
+      "AndroidPersistentFileLocation": "Compatibility",
+      "AndroidExtraFilesystems": ["files", "files-external", "documents", "sandbox", "sandbox-2", "cache", "cache-external", "assets", "root"]
+    }
+  },
+  "server": {
+    "androidScheme": "https",
+    "host": "localhost",
+    "port": 4173
+  },
+  "ios": {
+    "scheme": "henkanki",
+    "bundleIdentifier": "com.henkanki.app"
+  },
+  "android": {
+    "packageName": "com.henkanki.app",
+    "versionCode": "2",
+    "versionName": "0.2.0",
+    "minSdkVersion": 21,
+    "targetSdkVersion": 34,
+    "webContentsDebuggingEnabled": true,
+    "buildOptions": {
+      "keystorePath": "",
+      "keystorePassword": "",
+      "keystoreAlias": "",
+      "keystoreAliasPassword": ""
+    }
+  }
+}

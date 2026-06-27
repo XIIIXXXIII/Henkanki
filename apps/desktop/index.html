@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Henkanki Desktop</title>
+  <link rel="stylesheet" href="../web/src/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="header">
+      <div class="header-content">
+        <p class="mark">変換機</p>
+        <h1>Henkanki Desktop</h1>
+        <p class="subtitle">Local-first file converter for your desktop</p>
+      </div>
+    </header>
+
+    <section class="panel">
+      <div class="drop-area" id="drop-area">
+        <label class="drop">
+          <input id="file" type="file" accept=".json,.yaml,.yml,.csv,.md,.txt,.html,.xml,.toml,.ini,.json5,.hjson,.pdf,.png,.jpg,.jpeg,.webp">
+          <span class="drop-text">
+            <span class="drop-icon">📁</span>
+            <span>Drag & drop a file or click to browse</span>
+          </span>
+        </label>
+        <div id="file-info" class="file-info hidden">
+          <span id="file-name"></span>
+          <span id="file-size"></span>
+          <span id="file-type"></span>
+        </div>
+      </div>
+
+      <div class="conversion-grid">
+        <div class="format-selector">
+          <label for="from">From:</label>
+          <select id="from">
+            <option value="auto">Auto-detect</option>
+            <option value="json">JSON</option>
+            <option value="yaml">YAML</option>
+            <option value="csv">CSV</option>
+            <option value="md">Markdown</option>
+            <option value="html">HTML</option>
+            <option value="txt">Text</option>
+            <option value="xml">XML</option>
+            <option value="toml">TOML</option>
+            <option value="ini">INI</option>
+            <option value="pdf">PDF</option>
+            <option value="png">PNG</option>
+            <option value="jpg">JPEG</option>
+            <option value="webp">WebP</option>
+          </select>
+        </div>
+        <div class="conversion-arrow">
+          <span>↗</span>
+        </div>
+        <div class="format-selector">
+          <label for="to">To:</label>
+          <select id="to">
+            <option value="json">JSON</option>
+            <option value="yaml">YAML</option>
+            <option value="csv">CSV</option>
+            <option value="md">Markdown</option>
+            <option value="html">HTML</option>
+            <option value="txt">Text</option>
+            <option value="xml">XML</option>
+            <option value="toml">TOML</option>
+            <option value="ini">INI</option>
+            <option value="pdf">PDF</option>
+            <option value="png">PNG</option>
+            <option value="jpg">JPEG</option>
+            <option value="webp">WebP</option>
+            <option value="base64">Base64</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="convert" class="btn primary">
+          <span class="btn-icon">🔄</span>
+          <span class="btn-text">Convert locally</span>
+        </button>
+        <button id="swap" class="btn secondary" title="Swap formats">
+          <span class="btn-icon">↔</span>
+        </button>
+      </div>
+
+      <div class="output-section">
+        <div class="output-header">
+          <span>Output</span>
+          <div class="output-actions">
+            <button id="copy-btn" class="icon-btn small" title="Copy to clipboard">
+              <span class="icon">📋</span>
+            </button>
+            <button id="save-btn" class="icon-btn small" title="Save file">
+              <span class="icon">💾</span>
+            </button>
+            <button id="clear-btn" class="icon-btn small" title="Clear output">
+              <span class="icon">🗑</span>
+            </button>
+          </div>
+        </div>
+        <pre id="output" aria-live="polite"></pre>
+      </div>
+
+      <div class="stats">
+        <span id="conversion-time"></span>
+        <span id="input-size"></span>
+        <span id="output-size"></span>
+      </div>
+    </section>
+  </main>
+
+  <script type="module">
+    import { invoke } from '@tauri-apps/api/tauri';
+    import { open } from '@tauri-apps/api/dialog';
+    import { readTextFile, readBinaryFile, writeTextFile, writeBinaryFile } from '@tauri-apps/api/fs';
+    import { basename } from '@tauri-apps/api/path';
+    
+    // Import converters
+    import { convert, canConvertText, canConvertBinary } from '../../../packages/converters/src/index.mjs';
+    import { detectFormat, listFormats, findFormat } from '../../../packages/core/src/index.mjs';
+    
+    const $ = (id) => document.getElementById(id);
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      setupEventListeners();
+    });
+    
+    function setupEventListeners() {
+      // File selection with Tauri dialog
+      $('file').addEventListener('click', async (e) => {
+        e.preventDefault();
+        try {
+          const selected = await open({
+            multiple: false,
+            filters: [
+              { name: 'All Files', extensions: ['*'] },
+              { name: 'Text Files', extensions: ['json', 'yaml', 'yml', 'csv', 'md', 'txt', 'html', 'xml', 'toml', 'ini'] },
+              { name: 'PDF Files', extensions: ['pdf'] },
+              { name: 'Image Files', extensions: ['png', 'jpg', 'jpeg', 'webp'] }
+            ]
+          });
+          
+          if (selected) {
+            await loadFile(selected);
+          }
+        } catch (e) {
+          console.error('Error opening file:', e);
+        }
+      });
+      
+      // Drag and drop
+      const dropArea = $('drop-area');
+      dropArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropArea.classList.add('drag-over');
+      });
+      
+      dropArea.addEventListener('dragleave', () => {
+        dropArea.classList.remove('drag-over');
+      });
+      
+      dropArea.addEventListener('drop', async (e) => {
+        e.preventDefault();
+        dropArea.classList.remove('drag-over');
+        
+        // Tauri doesn't support drag and drop from OS in webview
+        // So we use the file input as fallback
+        if (e.dataTransfer.files.length) {
+          await loadFile(e.dataTransfer.files[0].path);
+        }
+      });
+      
+      // Conversion
+      $('convert').addEventListener('click', handleConvert);
+      
+      // Swap formats
+      $('swap').addEventListener('click', () => {
+        const temp = $('from').value;
+        $('from').value = $('to').value;
+        $('to').value = temp;
+      });
+      
+      // Copy to clipboard
+      $('copy-btn').addEventListener('click', () => {
+        const output = $('output').textContent;
+        if (output) {
+          navigator.clipboard.writeText(output);
+        }
+      });
+      
+      // Save file
+      $('save-btn').addEventListener('click', async () => {
+        const output = $('output').textContent;
+        if (output) {
+          const toFormat = $('to').value;
+          const extension = findFormat(toFormat)?.extension || toFormat;
+          const defaultPath = await invoke('get_save_path', { extension });
+          
+          const savePath = await open({
+            title: 'Save File',
+            defaultPath,
+            filters: [{ name: 'All Files', extensions: ['*'] }]
+          });
+          
+          if (savePath) {
+            await writeTextFile(savePath, output);
+          }
+        }
+      });
+      
+      // Clear output
+      $('clear-btn').addEventListener('click', () => {
+        $('output').textContent = '';
+        $('file-info').classList.add('hidden');
+      });
+    }
+    
+    async function loadFile(filePath) {
+      const fileInfoEl = $('file-info');
+      const fileNameEl = $('file-name');
+      const fileSizeEl = $('file-size');
+      const fileTypeEl = $('file-type');
+      
+      try {
+        const stats = await invoke('get_file_info', { path: filePath });
+        const format = detectFormat(filePath);
+        
+        fileInfoEl.classList.remove('hidden');
+        fileNameEl.textContent = stats.name || filePath;
+        fileSizeEl.textContent = formatBytes(stats.size);
+        fileTypeEl.textContent = format?.id || 'unknown';
+        
+        // Auto-detect format
+        if ($('from').value === 'auto' && format) {
+          $('from').value = format.id;
+        }
+        
+        // Store file path for later use
+        $('file').dataset.currentFile = filePath;
+        
+      } catch (e) {
+        console.error('Error loading file:', e);
+      }
+    }
+    
+    async function handleConvert() {
+      const filePath = $('file').dataset.currentFile;
+      if (!filePath) {
+        alert('Please select a file first');
+        return;
+      }
+      
+      const from = $('from').value;
+      const to = $('to').value;
+      
+      if (from === 'auto') {
+        const format = detectFormat(filePath);
+        if (format) {
+          $('from').value = format.id;
+        }
+      }
+      
+      try {
+        const startTime = performance.now();
+        
+        // Read file
+        const fileStats = await invoke('get_file_info', { path: filePath });
+        const isBinary = fileStats.isBinary || ['pdf', 'png', 'jpg', 'jpeg', 'webp', 'gif'].includes(from);
+        
+        let input;
+        if (isBinary) {
+          input = await readBinaryFile(filePath);
+        } else {
+          input = await readTextFile(filePath);
+        }
+        
+        // Convert
+        const result = await convert(input, from, to);
+        
+        // Display result
+        const outputEl = $('output');
+        if (typeof result === 'string') {
+          outputEl.textContent = result;
+        } else if (result instanceof Uint8Array) {
+          outputEl.textContent = new TextDecoder().decode(result);
+        } else {
+          outputEl.textContent = String(result);
+        }
+        
+        // Update stats
+        const endTime = performance.now();
+        $('conversion-time').textContent = `Time: ${(endTime - startTime).toFixed(2)}ms`;
+        $('input-size').textContent = `Input: ${formatBytes(fileStats.size)}`;
+        $('output-size').textContent = `Output: ${formatBytes(Buffer.byteLength(outputEl.textContent, 'utf8'))}`;
+        
+      } catch (e) {
+        alert(`Conversion failed: ${e.message}`);
+        console.error(e);
+      }
+    }
+    
+    function formatBytes(bytes) {
+      if (bytes < 1024) return `${bytes} B`;
+      if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
+      return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+    }
+  </script>
+</body>
+</html>

@@ -4,46 +4,153 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#0b0d10">
+  <meta name="description" content="Local-first universal file converter. Convert JSON, YAML, CSV, Markdown, HTML, XML, TOML, INI, and more - all in your browser.">
   <link rel="manifest" href="/public/manifest.webmanifest">
   <link rel="stylesheet" href="/src/styles.css">
-  <title>Henkanki</title>
+  <title>Henkanki - Local File Converter</title>
 </head>
 <body>
   <main class="shell">
-    <section class="hero">
-      <p class="mark">変換機</p>
-      <h1>Henkanki</h1>
-      <p>Local-first universal file converter. No database. No required upload. Your files stay on your device.</p>
-    </section>
-    <section class="panel">
-      <label class="drop">
-        <input id="file" type="file" accept=".json,.yaml,.yml,.csv,.md,.txt,.html">
-        <span>Choose a text file</span>
-      </label>
-      <div class="grid">
-        <select id="from">
-          <option value="json">JSON</option>
-          <option value="yaml">YAML</option>
-          <option value="csv">CSV</option>
-          <option value="md">Markdown</option>
-          <option value="html">HTML</option>
-          <option value="txt">Text</option>
-        </select>
-        <span>↗</span>
-        <select id="to">
-          <option value="json">JSON</option>
-          <option value="yaml">YAML</option>
-          <option value="csv">CSV</option>
-          <option value="md">Markdown</option>
-          <option value="html">HTML</option>
-          <option value="txt">Text</option>
-        </select>
+    <header class="header">
+      <div class="header-content">
+        <p class="mark">変換機</p>
+        <h1>Henkanki</h1>
+        <p class="subtitle">Local-first universal file converter</p>
       </div>
-      <button id="convert">Convert locally</button>
-      <pre id="output" aria-live="polite"></pre>
-      <a id="download" hidden>Download result</a>
+      <div class="header-actions">
+        <button id="theme-toggle" class="icon-btn" title="Toggle theme">
+          <span class="icon">🌓</span>
+        </button>
+        <button id="history-btn" class="icon-btn" title="Conversion History">
+          <span class="icon">🕒</span>
+          <span id="history-count" class="badge">0</span>
+        </button>
+        <button id="favorites-btn" class="icon-btn" title="Favorite Conversions">
+          <span class="icon">⭐</span>
+          <span id="favorites-count" class="badge">0</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="panel">
+      <div class="drop-area" id="drop-area">
+        <label class="drop">
+          <input id="file" type="file" accept=".json,.yaml,.yml,.csv,.md,.txt,.html,.xml,.toml,.ini,.json5,.hjson,.base64,.url">
+          <span class="drop-text">
+            <span class="drop-icon">📁</span>
+            <span>Drag & drop a file or click to browse</span>
+          </span>
+        </label>
+        <div id="file-info" class="file-info hidden">
+          <span id="file-name"></span>
+          <span id="file-size"></span>
+          <span id="file-type"></span>
+        </div>
+      </div>
+
+      <div class="conversion-grid">
+        <div class="format-selector">
+          <label for="from">From:</label>
+          <select id="from">
+            <option value="auto">Auto-detect</option>
+            <option value="json">JSON</option>
+            <option value="yaml">YAML</option>
+            <option value="csv">CSV</option>
+            <option value="md">Markdown</option>
+            <option value="html">HTML</option>
+            <option value="txt">Text</option>
+            <option value="xml">XML</option>
+            <option value="toml">TOML</option>
+            <option value="ini">INI</option>
+            <option value="json5">JSON5</option>
+            <option value="hjson">HJSON</option>
+            <option value="base64">Base64</option>
+            <option value="url">URL</option>
+          </select>
+        </div>
+        <div class="conversion-arrow">
+          <span>↗</span>
+        </div>
+        <div class="format-selector">
+          <label for="to">To:</label>
+          <select id="to">
+            <option value="json">JSON</option>
+            <option value="yaml">YAML</option>
+            <option value="csv">CSV</option>
+            <option value="md">Markdown</option>
+            <option value="html">HTML</option>
+            <option value="txt">Text</option>
+            <option value="xml">XML</option>
+            <option value="toml">TOML</option>
+            <option value="ini">INI</option>
+            <option value="json5">JSON5</option>
+            <option value="hjson">HJSON</option>
+            <option value="base64">Base64</option>
+            <option value="url">URL</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button id="convert" class="btn primary">
+          <span class="btn-icon">🔄</span>
+          <span class="btn-text">Convert locally</span>
+        </button>
+        <button id="swap" class="btn secondary" title="Swap formats">
+          <span class="btn-icon">↔</span>
+        </button>
+        <button id="favorite" class="btn secondary" title="Add to favorites">
+          <span class="btn-icon">⭐</span>
+        </button>
+      </div>
+
+      <div class="output-section">
+        <div class="output-header">
+          <span>Output</span>
+          <div class="output-actions">
+            <button id="copy-btn" class="icon-btn small" title="Copy to clipboard">
+              <span class="icon">📋</span>
+            </button>
+            <button id="clear-btn" class="icon-btn small" title="Clear output">
+              <span class="icon">🗑</span>
+            </button>
+          </div>
+        </div>
+        <pre id="output" aria-live="polite"></pre>
+        <a id="download" class="btn primary" hidden>
+          <span class="btn-icon">💾</span>
+          <span class="btn-text">Download result</span>
+        </a>
+      </div>
+
+      <div class="stats">
+        <span id="conversion-time"></span>
+        <span id="input-size"></span>
+        <span id="output-size"></span>
+      </div>
     </section>
+
+    <div id="history-panel" class="side-panel hidden">
+      <div class="panel-header">
+        <h2>Conversion History</h2>
+        <button id="close-history" class="icon-btn">×</button>
+      </div>
+      <div id="history-list" class="history-list"></div>
+      <button id="clear-history" class="btn secondary">Clear History</button>
+    </div>
+
+    <div id="favorites-panel" class="side-panel hidden">
+      <div class="panel-header">
+        <h2>Favorite Conversions</h2>
+        <button id="close-favorites" class="icon-btn">×</button>
+      </div>
+      <div id="favorites-list" class="favorites-list"></div>
+      <button id="clear-favorites" class="btn secondary">Clear Favorites</button>
+    </div>
+
+    <div id="notification" class="notification hidden"></div>
   </main>
+
   <script type="module" src="/src/main.mjs"></script>
 </body>
 </html>
