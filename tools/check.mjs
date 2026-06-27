@@ -1,0 +1,14 @@
+import { access, readFile, writeFile, unlink } from 'node:fs/promises';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+const exec = promisify(execFile);
+const required = ['README.md','package.json','henkanki.config.json','apps/web/index.html','apps/cli/henkanki.mjs','packages/core/src/index.mjs','packages/converters/src/index.mjs','packages/formats/src/formats.json'];
+for (const file of required) await access(file);
+await exec('node', ['apps/cli/henkanki.mjs', 'formats']);
+await writeFile('/tmp/henkanki-check.json', '{"name":"Henkanki","local":true}\n');
+await exec('node', ['apps/cli/henkanki.mjs', 'convert', '/tmp/henkanki-check.json', '/tmp/henkanki-check.yaml', '--from', 'json', '--to', 'yaml']);
+const out = await readFile('/tmp/henkanki-check.yaml', 'utf8');
+if (!out.includes('name: Henkanki')) throw new Error('Conversion check failed');
+await unlink('/tmp/henkanki-check.json');
+await unlink('/tmp/henkanki-check.yaml');
+console.log('Henkanki checks passed');
