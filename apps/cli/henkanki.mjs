@@ -2,7 +2,7 @@
 /** Henkanki v1 CLI — local-first, capability-aware, and scriptable. */
 import { readFile, writeFile, stat, readdir, mkdir } from 'node:fs/promises';
 import { basename, dirname, extname, join, resolve } from 'node:path';
-import { detectFormat, discoverCapabilities, extensionFor, listFormats, planConversion, HenkankiError } from '../../packages/core/src/index.mjs';
+import { detectFormat, inspectFormat, discoverCapabilities, extensionFor, listFormats, planConversion, HenkankiError } from '../../packages/core/src/index.mjs';
 import { convert, getPlan } from '../../packages/converters/src/index.mjs';
 
 const [, , command = 'help', ...raw] = process.argv;
@@ -14,7 +14,7 @@ const valueAfter = (key) => { const at = raw.indexOf(key); return at >= 0 ? raw[
 const positional = raw.filter((entry, index) => !entry.startsWith('--') && raw[index - 1] !== '--from' && raw[index - 1] !== '--to');
 const emit = (value) => jsonMode ? console.log(JSON.stringify(value, null, 2)) : typeof value === 'string' ? console.log(value) : console.log(JSON.stringify(value, null, 2));
 
-function detected(file) { return detectFormat(file).format.id; }
+async function inspectInput(file) { return inspectFormat(file, await readFile(file)); }
 function presentPlan(plan) {
   if (jsonMode) return emit(plan);
   console.log(`${paint('bold', `${plan.from.id} → ${plan.to.id}`)}  ${paint(plan.status === 'available' ? 'green' : 'yellow', plan.status)}`);
@@ -34,7 +34,8 @@ async function convertOne(input, output, from, to, { dryRun = false } = {}) {
 
 async function commandConvert() {
   const [input, output] = positional; if (!input || !output) throw new Error('Usage: henkanki convert <input> <output> [--from format] [--to format] [--dry-run] [--json]');
-  const from = valueAfter('--from') || detected(input); const to = valueAfter('--to') || detected(output);
+  const detection = valueAfter('--from') ? null : await inspectInput(input);
+  const from = valueAfter('--from') || detection.format.id; const to = valueAfter('--to') || detectFormat(output).format.id;
   const result = await convertOne(resolve(input), resolve(output), from, to, { dryRun: flags.has('--dry-run') });
   if (jsonMode) return emit(result);
   if (result.dryRun) return presentPlan(result.plan);
@@ -47,7 +48,7 @@ async function commandBatch() {
   if (!sourceDirectory || !outputDirectory || !to) throw new Error('Usage: henkanki batch <input-dir> <output-dir> --to format [--from format] [--dry-run] [--json]');
   const entries = await readdir(sourceDirectory, { withFileTypes: true }); const outcomes = [];
   for (const entry of entries.filter((entry) => entry.isFile())) {
-    const input = join(sourceDirectory, entry.name); const from = forcedFrom || detected(entry.name); const output = join(outputDirectory, `${basename(entry.name, extname(entry.name))}.${extensionFor(to)}`);
+    const input = join(sourceDirectory, entry.name); const detection = forcedFrom ? null : await inspectInput(input); const from = forcedFrom || detection.format.id; const output = join(outputDirectory, `${basename(entry.name, extname(entry.name))}.${extensionFor(to)}`);
     try { outcomes.push({ ok: true, ...(await convertOne(input, output, from, to, { dryRun: flags.has('--dry-run') })) }); }
     catch (cause) { outcomes.push({ ok: false, input, from, to, error: cause.message, code: cause.code || 'CONVERSION_FAILED' }); }
   }
@@ -68,12 +69,12 @@ async function commandFormats() {
 
 async function commandInspect() {
   const [file] = positional; if (!file) throw new Error('Usage: henkanki inspect <file> [--json]');
-  const info = await stat(file); const detection = detectFormat(file); const capabilities = discoverCapabilities();
+  const info = await stat(file); const detection = await inspectInput(file); const capabilities = discoverCapabilities();
   const routes = listFormats().map((format) => planConversion(detection.format.id, format.id, capabilities)).filter((plan) => plan.status !== 'unavailable');
   const report = { file: resolve(file), size: info.size, detection, routes };
   if (jsonMode) return emit(report);
   console.log(`${paint('bold', basename(file))}  ${paint('cyan', detection.format.id)}  ${info.size} B`);
-  console.log(`Detected by ${detection.method}; ${routes.length} verified or optional routes available.`);
+  console.log(`Detected by ${detection.method} (${detection.evidence || 'no extra evidence'}); ${routes.length} verified or optional routes available.`);
 }
 
 function commandPlan() {

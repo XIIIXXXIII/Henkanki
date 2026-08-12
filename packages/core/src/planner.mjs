@@ -6,11 +6,12 @@ export const operationCatalog = Object.freeze([
   { id: 'text-codec', family: 'text', from: ['text', 'base64', 'url', 'hex'], to: ['text', 'base64', 'url', 'hex'], support: 'official' },
   { id: 'markup', family: 'text', from: ['markdown', 'html', 'rtf'], to: ['html', 'markdown', 'text'], support: 'official' },
   { id: 'developer', family: 'developer', from: ['properties', 'env', 'plist', 'sql', 'openapi'], to: ['json', 'yaml', 'text', 'properties', 'env', 'plist'], support: 'official' },
-  { id: 'image', family: 'image', from: ['png', 'jpeg', 'webp', 'gif', 'bmp', 'tiff', 'ico', 'avif', 'svg'], to: ['png', 'jpeg', 'webp', 'gif', 'bmp', 'tiff', 'ico', 'avif'], support: 'supported', requires: ['ffmpeg'], engine: 'ffmpeg' },
+  { id: 'image', family: 'image', from: ['png', 'jpeg', 'webp', 'gif', 'bmp', 'tiff', 'ico', 'avif'], to: ['png', 'jpeg', 'webp', 'gif', 'bmp', 'tiff', 'ico', 'avif'], support: 'supported', requires: ['ffmpeg'], engine: 'ffmpeg' },
   { id: 'pdf', family: 'document', from: ['pdf', 'png', 'jpeg'], to: ['text', 'png', 'jpeg', 'pdf'], support: 'supported', engine: 'pdftotext/pdftoppm/pdf-lib' },
   { id: 'office', family: 'document', from: ['docx', 'xlsx', 'pptx', 'odt', 'ods', 'odp'], to: ['pdf', 'text'], support: 'supported', requires: ['libreoffice'] },
-  { id: 'media', family: 'media', from: ['mp3', 'wav', 'flac', 'ogg', 'm4a', 'mp4', 'mkv', 'webm', 'mov', 'avi'], to: ['mp3', 'wav', 'flac', 'ogg', 'm4a', 'mp4', 'mkv', 'webm', 'mov', 'avi', 'png'], support: 'supported', requires: ['ffmpeg'] },
-  { id: 'archive', family: 'archive', from: ['zip', 'tar', 'gz'], to: ['zip', 'tar', 'gz', 'text'], support: 'supported' }
+  { id: 'audio', family: 'media', from: ['mp3', 'wav', 'flac', 'ogg', 'm4a', 'aac', 'opus', 'aiff'], to: ['mp3', 'wav', 'flac', 'ogg', 'm4a', 'aac', 'opus', 'aiff'], support: 'supported', requires: ['ffmpeg'], engine: 'ffmpeg' },
+  { id: 'video', family: 'media', from: ['mp4', 'mkv', 'webm', 'mov', 'avi', '3gp', 'mpeg', 'ts'], to: ['mp3', 'wav', 'flac', 'ogg', 'm4a', 'aac', 'opus', 'aiff', 'mp4', 'mkv', 'webm', 'mov', 'avi', '3gp', 'mpeg', 'ts', 'png', 'gif'], support: 'supported', requires: ['ffmpeg'], engine: 'ffmpeg' },
+  { id: 'archive', family: 'archive', from: ['zip', 'tar', 'gz', 'bz2', 'xz'], to: ['zip', 'tar', 'gz', 'bz2', 'xz', 'text'], support: 'supported', requires: ['tar'], engine: 'tar/unzip' }
 ]);
 
 export function planConversion(fromId, toId, capabilities = { tools: {} }) {
@@ -27,7 +28,7 @@ export function planConversion(fromId, toId, capabilities = { tools: {} }) {
     status: missing.length ? 'optional-dependency' : 'available',
     from, to, operation: operation.id, support: operation.support, engine: operation.engine,
     requirements: dynamicRequirements, missing,
-    warnings: operation.id === 'image' && ['jpeg', 'webp', 'avif'].includes(to.id) ? ['The selected output can be lossy.'] : []
+    warnings: (operation.id === 'image' && ['jpeg', 'webp', 'avif'].includes(to.id)) || (operation.id === 'video' && ['mp3', 'aac', 'm4a', 'opus', 'ogg', 'wav', 'flac', 'aiff'].includes(to.id)) ? ['The selected output can be lossy.'] : []
   };
 }
 

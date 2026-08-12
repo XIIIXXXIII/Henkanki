@@ -77,9 +77,11 @@ async function pdfConvert(content, from, to, options) {
 
 async function mediaConvert(content, from, to, options) {
   return inTemporaryDirectory(async (directory) => {
-    const source = await writeInput(directory, content, from); const extension = to === 'png' ? 'png' : to; const target = path.join(directory, `output.${extension}`);
+    const source = await writeInput(directory, content, from); const extension = to; const target = path.join(directory, `output.${extension}`);
     const args = ['-hide_banner', '-loglevel', 'error', '-y', '-i', source];
     if (to === 'png') args.push('-frames:v', '1');
+    if (to === 'gif') args.push('-vf', 'fps=10,scale=480:-1:flags=lanczos');
+    if (to === '3gp') args.push('-vf', 'scale=176:144:force_original_aspect_ratio=decrease,pad=176:144:(ow-iw)/2:(oh-ih)/2');
     args.push(target); await run('ffmpeg', args, options);
     return { output: await readFile(target), diagnostics: [] };
   });
@@ -109,9 +111,11 @@ async function archiveConvert(content, from, to, options) {
     const extract = path.join(directory, 'extract'); await mkdir(extract);
     if (from === 'zip') await run('unzip', ['-qq', source, '-d', extract], options);
     else await run('tar', ['-xf', source, '-C', extract], options);
-    const target = path.join(directory, to === 'gz' ? 'output.tar.gz' : `output.${to}`);
+    const target = path.join(directory, ['gz', 'bz2', 'xz'].includes(to) ? `output.tar.${to}` : `output.${to}`);
     if (to === 'zip') await run('zip', ['-qr', target, '.'], { ...options, cwd: extract });
     else if (to === 'gz') await run('tar', ['-czf', target, '-C', extract, '.'], options);
+    else if (to === 'bz2') await run('tar', ['-cjf', target, '-C', extract, '.'], options);
+    else if (to === 'xz') await run('tar', ['-cJf', target, '-C', extract, '.'], options);
     else if (to === 'tar') await run('tar', ['-cf', target, '-C', extract, '.'], options);
     else throw error('UNSUPPORTED_ROUTE', `No verified archive route to ${to}.`);
     return { output: await readFile(target), diagnostics: [] };
@@ -122,7 +126,7 @@ export async function convertBinary(input, fromValue, toValue, options = {}) {
   const from = formatId(fromValue); const to = formatId(toValue); const operation = options.plan?.operation;
   if (operation === 'image') return imageConvert(input, from, to, options);
   if (operation === 'pdf') return pdfConvert(input, from, to, options);
-  if (operation === 'media') return mediaConvert(input, from, to, options);
+  if (['audio', 'video', 'media'].includes(operation)) return mediaConvert(input, from, to, options);
   if (operation === 'office') return officeConvert(input, from, to, options);
   if (operation === 'archive') return archiveConvert(input, from, to, options);
   throw error('UNSUPPORTED_ROUTE', `No verified binary converter for ${from} -> ${to}.`, { from, to });

@@ -1,14 +1,14 @@
 # Henkanki — Local-First File Conversion
 
-> Henkanki plans a conversion before executing it. Text routes run inside the application; PDF, image, media, Office and archive routes are enabled only after their local adapter is discovered. **Files are not uploaded by Henkanki.**
+> Henkanki identifies a file from its **bytes and parseable content before its filename extension**, plans a conversion, and only then executes it. Text routes run inside the application; PDF, image, media, Office and archive routes are enabled only after their local adapter is discovered. **Files are not uploaded by Henkanki.**
 
 ## v1 at a glance
 
 | Surface | What is real today | Scope |
 |---|---|---|
 | CLI | `convert`, `batch`, `inspect`, `plan`, `formats`, `doctor`, `plugins` | Reference engine for all verified routes |
-| PWA | Offline shell; browser-local text conversion and download | JSON, YAML, CSV, Markdown, HTML and codecs |
-| Native adapters | PDF text/image, image transforms, audio/video, Office, ZIP/TAR/GZ | Require local Poppler, FFmpeg, LibreOffice and archive tools as applicable |
+| PWA | Offline shell; browser-local text conversion plus signature-based input identification | JSON, YAML, CSV, Markdown, HTML and codecs; native routes are identified and handed off honestly |
+| Native adapters | PDF text/image, raster transforms, audio/video, Office, ZIP/TAR/GZ/BZ2/XZ | Require local Poppler, FFmpeg, LibreOffice and archive tools as applicable |
 | Desktop | Tauri v2 shell invoking the local CLI with explicit argument arrays | Current Linux validation; standard desktop targets are documented |
 | Mobile | Expo client for JSON/YAML/plain-text on Android and iOS | Native heavy adapters are intentionally out of scope |
 | Niche Unix | FreeBSD port draft and HaikuPorts recipe scaffold | See [platform support](docs/platform-support.md) |
@@ -23,7 +23,8 @@ pnpm test:all
 
 # Inspect what the host can really execute
 node apps/cli/henkanki.mjs doctor
-node apps/cli/henkanki.mjs plan pdf text
+node apps/cli/henkanki.mjs inspect renamed-upload.bin
+node apps/cli/henkanki.mjs plan mp4 webm
 
 # Convert a verified local route
 node apps/cli/henkanki.mjs convert profile.json profile.yaml
@@ -32,15 +33,19 @@ node apps/cli/henkanki.mjs batch ./incoming ./out --to webp
 
 `henkanki doctor` is the source of truth for optional tooling. A missing adapter produces a typed diagnostic rather than a placeholder file.
 
+`henkanki inspect` reports the detected format, confidence, and evidence. PNG/JPEG/PDF/ZIP/Office containers, common audio/video containers, archives, and text formats are identified from content where possible; extensions are a final hint for ambiguous containers such as MP4/M4A/MOV. See [format detection](docs/format-detection.md) for the detection cascade and support policy.
+
 ## Route families
 
 | Family | Examples | Execution |
 |---|---|---|
 | Structured text | JSON, YAML, TOML, INI, XML, CSV, TSV, NDJSON | Built in and tested |
 | Markup/codecs | Markdown, HTML, plain text, Base64, URL, hex | Built in and tested |
+| Images | PNG, JPEG, WebP, GIF, BMP, TIFF, ICO, AVIF | FFmpeg adapter; output warnings identify lossy codecs |
 | Documents | PDF ↔ text/image; image → PDF; Office → PDF/text | Native libraries or discovered tools |
-| Media | WAV/MP3/MP4/WebM/image frame conversion | FFmpeg adapter |
-| Archives | ZIP listing/repack; TAR/GZ list/repack | JSZip and local archive tools |
+| Audio | MP3, WAV, FLAC, OGG, M4A, AAC, Opus, AIFF | FFmpeg adapter |
+| Video | MP4, MKV, WebM, MOV, AVI, 3GP, MPEG, MPEG-TS, GIF/frame output | FFmpeg adapter |
+| Archives | ZIP, TAR, GZ, BZ2, XZ list/repack | JSZip and local archive tools |
 
 ## Applications
 
