@@ -1,0 +1,39 @@
+SUMMARY="Local-first, capability-aware file converter"
+DESCRIPTION="Henkanki converts verified file routes locally. Its CLI discovers optional local tools before enabling PDF, image, media, Office or archive conversion."
+HOMEPAGE="https://github.com/XIIIXXXIII/Henkanki"
+COPYRIGHT="2026 XIIIXXXIII"
+LICENSE="MIT"
+REVISION="1"
+SOURCE_URI="https://github.com/XIIIXXXIII/Henkanki/archive/refs/tags/v$portVersion.tar.gz"
+CHECKSUM_SHA256="TO_BE_FILLED_FROM_RELEASE_TARBALL"
+SOURCE_FILENAME="Henkanki-$portVersion.tar.gz"
+SOURCE_DIR="Henkanki-$portVersion"
+ARCHITECTURES="x86_gcc2 x86_64 !arm ?arm64"
+
+PROVIDES="
+	henkanki = $portVersion
+	cmd:henkanki = $portVersion
+"
+REQUIRES="
+	haiku
+	cmd:node
+"
+BUILD_REQUIRES="
+	haiku_devel
+	cmd:node
+"
+BUILD_PREREQUIRES="$BUILD_REQUIRES"
+
+INSTALL() {
+	mkdir -p "$binDir" "$dataDir/henkanki"
+	cp -a apps packages plugins package.json pnpm-lock.yaml "$dataDir/henkanki/"
+	cat > "$binDir/henkanki" << EOF
+#!/bin/sh
+exec node "$dataDir/henkanki/apps/cli/henkanki.mjs" "\$@"
+EOF
+	chmod 755 "$binDir/henkanki"
+}
+
+TEST() {
+	node --test tests/text-conversions.test.mjs
+}

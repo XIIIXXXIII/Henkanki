@@ -1,0 +1,12 @@
+import { access, readFile } from 'node:fs/promises';
+import { constants } from 'node:fs';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
+const run = promisify(execFile);
+const required = ['apps/cli/henkanki.mjs', 'packages/core/src/index.mjs', 'packages/converters/src/text.mjs', 'packages/converters/src/binary-adapters.mjs', 'packages/plugin-sdk/src/index.mjs', 'docs/platform-support.md'];
+for (const file of required) await access(new URL(`../${file}`, import.meta.url), constants.R_OK);
+const adapter = await readFile(new URL('../packages/converters/src/binary-adapters.mjs', import.meta.url), 'utf8');
+if (!adapter.includes('shell: false')) throw new Error('Native adapter guard is missing.');
+const { stdout } = await run(process.execPath, ['apps/cli/henkanki.mjs', 'plan', 'json', 'yaml', '--json']);
+const plan = JSON.parse(stdout); if (plan.status !== 'available') throw new Error('JSON → YAML must remain available.');
+console.log(`verified ${required.length} release surfaces and a core conversion plan`);

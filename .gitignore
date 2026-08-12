@@ -1,0 +1,11 @@
+node_modules/
+dist/
+target/
+apps/desktop/target/
+apps/desktop/gen/
+apps/web/node_modules/
+apps/web/dist/
+apps/mobile/node_modules/
+.expo/
+*.log
+.DS_Store

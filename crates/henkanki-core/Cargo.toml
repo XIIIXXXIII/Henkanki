@@ -1,0 +1,9 @@
+[package]
+name = "henkanki-core"
+version = "1.0.0-beta.1"
+edition = "2021"
+license = "MIT"
+description = "Portable conversion planning primitives for Henkanki."
+
+[lib]
+path = "src/lib.rs"

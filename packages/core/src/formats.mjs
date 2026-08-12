@@ -1,0 +1,73 @@
+export const supportLevels = Object.freeze(['official', 'supported', 'experimental', 'planned']);
+
+export const formatFamilies = Object.freeze({
+  structured: 'Structured data',
+  text: 'Text & markup',
+  image: 'Images',
+  document: 'Documents',
+  media: 'Audio & video',
+  archive: 'Archives',
+  developer: 'Developer assets'
+});
+
+const entry = (id, extensions, mime, family, support = 'official', extras = {}) => ({
+  id, extensions, mime, family, support, ...extras
+});
+
+export const formats = Object.freeze([
+  entry('json', ['json'], 'application/json', 'structured'),
+  entry('json5', ['json5'], 'application/json5', 'structured'),
+  entry('hjson', ['hjson'], 'application/hjson', 'structured'),
+  entry('yaml', ['yaml', 'yml'], 'application/yaml', 'structured'),
+  entry('toml', ['toml'], 'application/toml', 'structured'),
+  entry('ini', ['ini', 'cfg'], 'text/plain', 'structured'),
+  entry('xml', ['xml'], 'application/xml', 'structured'),
+  entry('csv', ['csv'], 'text/csv', 'structured'),
+  entry('tsv', ['tsv'], 'text/tab-separated-values', 'structured'),
+  entry('ndjson', ['ndjson', 'jsonl'], 'application/x-ndjson', 'structured'),
+  entry('text', ['txt', 'text'], 'text/plain', 'text'),
+  entry('markdown', ['md', 'markdown', 'mdown'], 'text/markdown', 'text'),
+  entry('html', ['html', 'htm'], 'text/html', 'text'),
+  entry('rtf', ['rtf'], 'application/rtf', 'text', 'supported'),
+  entry('base64', ['base64', 'b64'], 'text/plain', 'text'),
+  entry('url', ['urlenc'], 'text/plain', 'text'),
+  entry('hex', ['hex'], 'text/plain', 'text'),
+  entry('properties', ['properties'], 'text/x-java-properties', 'developer'),
+  entry('env', ['env'], 'text/plain', 'developer'),
+  entry('plist', ['plist'], 'application/x-plist', 'developer'),
+  entry('sql', ['sql'], 'application/sql', 'developer'),
+  entry('openapi', ['openapi.json', 'openapi.yaml', 'openapi.yml'], 'application/json', 'developer'),
+  entry('png', ['png'], 'image/png', 'image', 'supported'),
+  entry('jpeg', ['jpg', 'jpeg'], 'image/jpeg', 'image', 'supported'),
+  entry('webp', ['webp'], 'image/webp', 'image', 'supported'),
+  entry('gif', ['gif'], 'image/gif', 'image', 'supported'),
+  entry('bmp', ['bmp'], 'image/bmp', 'image', 'supported'),
+  entry('tiff', ['tif', 'tiff'], 'image/tiff', 'image', 'supported'),
+  entry('ico', ['ico'], 'image/x-icon', 'image', 'supported'),
+  entry('avif', ['avif'], 'image/avif', 'image', 'supported'),
+  entry('svg', ['svg'], 'image/svg+xml', 'image', 'supported'),
+  entry('pdf', ['pdf'], 'application/pdf', 'document', 'supported'),
+  entry('docx', ['docx'], 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'document', 'supported'),
+  entry('xlsx', ['xlsx'], 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'document', 'supported'),
+  entry('pptx', ['pptx'], 'application/vnd.openxmlformats-officedocument.presentationml.presentation', 'document', 'supported'),
+  entry('odt', ['odt'], 'application/vnd.oasis.opendocument.text', 'document', 'supported'),
+  entry('ods', ['ods'], 'application/vnd.oasis.opendocument.spreadsheet', 'document', 'supported'),
+  entry('odp', ['odp'], 'application/vnd.oasis.opendocument.presentation', 'document', 'supported'),
+  entry('epub', ['epub'], 'application/epub+zip', 'document', 'experimental'),
+  entry('mp3', ['mp3'], 'audio/mpeg', 'media', 'supported'),
+  entry('wav', ['wav'], 'audio/wav', 'media', 'supported'),
+  entry('flac', ['flac'], 'audio/flac', 'media', 'supported'),
+  entry('ogg', ['ogg', 'oga'], 'audio/ogg', 'media', 'supported'),
+  entry('m4a', ['m4a'], 'audio/mp4', 'media', 'supported'),
+  entry('mp4', ['mp4'], 'video/mp4', 'media', 'supported'),
+  entry('mkv', ['mkv'], 'video/x-matroska', 'media', 'supported'),
+  entry('webm', ['webm'], 'video/webm', 'media', 'supported'),
+  entry('mov', ['mov'], 'video/quicktime', 'media', 'supported'),
+  entry('avi', ['avi'], 'video/x-msvideo', 'media', 'supported'),
+  entry('zip', ['zip'], 'application/zip', 'archive', 'supported'),
+  entry('tar', ['tar'], 'application/x-tar', 'archive', 'supported'),
+  entry('gz', ['gz'], 'application/gzip', 'archive', 'supported'),
+  entry('bz2', ['bz2'], 'application/x-bzip2', 'archive', 'experimental'),
+  entry('xz', ['xz'], 'application/x-xz', 'archive', 'experimental'),
+  entry('7z', ['7z'], 'application/x-7z-compressed', 'archive', 'experimental')
+]);

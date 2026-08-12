@@ -1,0 +1,6 @@
+{
+  "$schema": "https://henkanki.local/schemas/format-registry-v1.json",
+  "version": 1,
+  "policy": "A format is marked supported only when at least one verified conversion route and a fixture test exist.",
+  "sourceOfTruth": "packages/core/src/formats.mjs"
+}

@@ -1,103 +1,12 @@
 {
-  "package": {
-    "name": "henkanki-desktop",
-    "version": "0.2.0",
-    "description": "Local-first universal file converter",
-    "authors": ["XIIIXXXIII"],
-    "license": "MIT",
-    "repository": "https://github.com/XIIIXXXIII/Henkanki",
-    "homepage": "https://github.com/XIIIXXXIII/Henkanki"
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Henkanki",
+  "version": "1.0.0-beta.1",
+  "identifier": "io.henkanki.desktop",
+  "build": { "frontendDist": "." },
+  "app": {
+    "windows": [{ "title": "Henkanki", "width": 1120, "height": 760, "minWidth": 720, "minHeight": 520, "resizable": true, "center": true }],
+    "security": { "csp": null }
   },
-  "tauri": {
-    "allowlist": {
-      "all": false,
-      "dialog": {
-        "all": true
-      },
-      "fs": {
-        "all": true,
-        "readTextFile": true,
-        "writeTextFile": true,
-        "readBinaryFile": true,
-        "writeBinaryFile": true
-      },
-      "path": {
-        "all": true
-      },
-      "shell": {
-        "all": true
-      }
-    },
-    "bundle": {
-      "active": true,
-      "targets": "all",
-      "identifier": "com.henkanki.desktop",
-      "icon": [
-        {
-          "file": "icons/icon.png",
-          "sizes": [32, 128, 256, 512]
-        }
-      ],
-      "longDescription": "Henkanki is a local-first universal file converter that works offline. Convert JSON, YAML, CSV, Markdown, HTML, XML, PDF, images, and more - all on your device.",
-      "shortDescription": "Local-first file converter",
-      "category": "Utility",
-      "copyright": "MIT License",
-      "deb": {
-        "depends": []
-      },
-      "macOS": {
-        "entitlements": null,
-        "exceptionDomain": null,
-        "hardenedRuntime": {
-          "enabled": true
-        },
-        "gatekeeper": {
-          "enabled": null
-        },
-        "signing": null
-      },
-      "windows": {
-        "wix": {
-          "language": "en-US"
-        },
-        "nsis": {
-          "license": "MIT",
-          "oneClick": false,
-          "allowToChangeInstallationDirectory": true
-        }
-      }
-    },
-    "updater": {
-      "active": false
-    },
-    "windows": [
-      {
-        "title": "Henkanki",
-        "width": 800,
-        "height": 600,
-        "minWidth": 600,
-        "minHeight": 400,
-        "resizable": true,
-        "visible": false,
-        "decorations": true,
-        "center": true,
-        "url": "index.html"
-      }
-    ],
-    "systemTray": {
-      "icon": "icons/tray-icon.png",
-      "menu": [
-        {
-          "id": "open",
-          "label": "Open",
-          "action": "show"
-        },
-        {
-          "id": "quit",
-          "label": "Quit",
-          "action": "quit"
-        }
-      ]
-    }
-  }
+  "bundle": { "active": true, "targets": "all", "shortDescription": "Local-first file converter", "longDescription": "Henkanki plans and runs verified file conversions on the local device." }
 }

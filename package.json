@@ -1,65 +1,54 @@
 {
   "name": "henkanki",
-  "version": "0.3.0",
+  "version": "1.0.0-beta.1",
   "private": true,
-  "description": "Local-first universal file conversion tool. Convert JSON, YAML, CSV, Markdown, HTML, XML, TOML, INI, PDF, images, video, audio, documents, and more - all locally on your device.",
+  "description": "Local-first, capability-aware file conversion toolkit for modern and niche operating systems.",
   "type": "module",
-  "scripts": {
-    "check": "node tools/check.mjs",
-    "test": "node tools/check.mjs",
-    "test:watch": "nodemon --watch packages --watch apps --ext mjs,json --exec \"npm run check\"",
-    "dev:web": "node apps/web/server.mjs",
-    "dev:cli": "node apps/cli/henkanki.mjs",
-    "start": "node apps/cli/henkanki.mjs",
-    "build": "npm run build:web",
-    "build:web": "echo 'Web build not implemented yet'",
-    "build:desktop": "cd apps/desktop && cargo build --release",
-    "build:mobile": "cd apps/mobile && npm run build",
-    "lint": "echo 'Linting not implemented yet'",
-    "format": "echo 'Formatting not implemented yet'",
-    "desktop:run": "cd apps/desktop && cargo run",
-    "mobile:add:android": "cd apps/mobile && npm run add:android",
-    "mobile:add:ios": "cd apps/mobile && npm run add:ios",
-    "mobile:run:android": "cd apps/mobile && npm run run:android",
-    "mobile:run:ios": "cd apps/mobile && npm run run:ios"
-  },
   "bin": {
     "henkanki": "apps/cli/henkanki.mjs"
   },
   "engines": {
-    "node": ">=18"
+    "node": ">=20"
+  },
+  "scripts": {
+    "check": "node tools/verify.mjs",
+    "test": "node --test tests/**/*.test.mjs",
+    "test:all": "pnpm check && pnpm test && cargo test --workspace",
+    "dev:cli": "node apps/cli/henkanki.mjs",
+    "dev:web": "pnpm --filter henkanki-web dev",
+    "build:web": "pnpm --filter henkanki-web build",
+    "build:desktop": "cd apps/desktop && cargo build --release",
+    "build:mobile": "cd apps/mobile && npm run android",
+    "lint": "node tools/lint.mjs",
+    "format": "node tools/format-check.mjs",
+    "release:verify": "node tools/release-verify.mjs"
   },
   "keywords": [
-    "file-converter",
+    "converter",
     "local-first",
     "offline",
-    "json",
-    "yaml",
-    "csv",
-    "markdown",
-    "html",
-    "converter",
+    "freebsd",
+    "haiku",
     "pwa",
-    "pdf",
-    "image",
-    "video",
-    "audio",
-    "document",
-    "desktop",
-    "mobile"
+    "cli",
+    "file-formats"
   ],
   "author": "XIIIXXXIII",
   "license": "MIT",
   "dependencies": {
-    "prompts": "^2.4.2"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.2",
-    "@capacitor/cli": "^6.0.0",
-    "@capacitor/core": "^6.0.0"
-  },
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ]
+    "@iarna/toml": "^2.2.5",
+    "archiver": "^7.0.1",
+    "csv-parse": "^5.5.6",
+    "csv-stringify": "^6.5.1",
+    "fast-xml-parser": "^5.10.1",
+    "hjson": "^3.2.2",
+    "js-yaml": "^4.1.0",
+    "json5": "^2.2.3",
+    "jszip": "^3.10.1",
+    "markdown-it": "^14.1.0",
+    "pdf-lib": "^1.17.1",
+    "sanitize-html": "^2.13.1",
+    "tar": "^7.4.3",
+    "unzipper": "^0.12.3"
+  }
 }

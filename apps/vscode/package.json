@@ -2,7 +2,7 @@
   "name": "henkanki-vscode",
   "displayName": "Henkanki",
   "description": "Local-first file conversion extension for VS Code. Convert files between formats without leaving your editor.",
-  "version": "0.3.0",
+  "version": "1.0.0-beta.1",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -29,9 +29,13 @@
         "command": "henkanki.showFormats",
         "title": "Henkanki: Show Supported Formats"
       },
-      {
-        "command": "henkanki.convertClipboard",
-        "title": "Henkanki: Convert Clipboard Content"
+        {
+          "command": "henkanki.convertClipboard",
+          "title": "Henkanki: Convert Clipboard Content"
+        },
+        {
+          "command": "henkanki.planFile",
+          "title": "Henkanki: Plan Conversion for File"
       }
     ],
     "menus": {
@@ -61,8 +65,12 @@
         {
           "command": "henkanki.showFormats"
         },
-        {
-          "command": "henkanki.convertClipboard"
+          {
+            "command": "henkanki.convertClipboard"
+          },
+          {
+            "command": "henkanki.planFile",
+            "when": "explorerResourceIsFile"
         }
       ]
     }

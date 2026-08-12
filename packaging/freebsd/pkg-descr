@@ -1,0 +1,5 @@
+Henkanki is a local-first conversion planner and file converter. Text routes run from
+the package itself; PDF, image, media, Office, and archive routes are enabled only
+when the corresponding local tool is installed and discovered by `henkanki doctor`.
+
+The package does not upload input files or start a background service.

@@ -1,0 +1,12 @@
+[package]
+name = "henkanki-cli"
+version = "1.0.0-beta.1"
+edition = "2021"
+license = "MIT"
+
+[[bin]]
+name = "henkanki-core"
+path = "src/main.rs"
+
+[dependencies]
+henkanki-core = { path = "../henkanki-core" }

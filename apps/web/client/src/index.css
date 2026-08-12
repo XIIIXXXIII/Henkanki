@@ -1,0 +1,74 @@
+/** Kanso Industrial: warm paper, graphite instruments, Henkaku Red actions and cyan system signals. */
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-display: "Space Grotesk", sans-serif;
+  --font-sans: "IBM Plex Sans", sans-serif;
+  --font-mono: "IBM Plex Mono", monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+}
+
+:root {
+  --background: oklch(0.16 0.004 80);
+  --foreground: oklch(0.91 0.01 75);
+  --card: oklch(0.19 0.004 80);
+  --card-foreground: oklch(0.91 0.01 75);
+  --popover: oklch(0.19 0.004 80);
+  --popover-foreground: oklch(0.91 0.01 75);
+  --primary: oklch(0.58 0.2 28);
+  --primary-foreground: oklch(0.99 0 0);
+  --secondary: oklch(0.24 0.004 80);
+  --secondary-foreground: oklch(0.83 0.01 75);
+  --muted: oklch(0.24 0.004 80);
+  --muted-foreground: oklch(0.66 0.01 75);
+  --accent: oklch(0.27 0.01 200);
+  --accent-foreground: oklch(0.95 0.01 200);
+  --destructive: oklch(0.62 0.21 28);
+  --destructive-foreground: oklch(0.99 0 0);
+  --border: oklch(0.32 0.006 80);
+  --input: oklch(0.32 0.006 80);
+  --ring: oklch(0.77 0.12 200);
+}
+
+.dark { color-scheme: dark; }
+
+@layer base {
+  * { @apply border-border outline-ring/50; }
+  body { @apply bg-background text-foreground; font-family: "IBM Plex Sans", sans-serif; }
+  button:not(:disabled), [role="button"]:not([aria-disabled="true"]), select:not(:disabled), input[type="file"] { @apply cursor-pointer; }
+}
+
+.font-display { font-family: "Space Grotesk", sans-serif; }
+.noise { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.32'/%3E%3C/svg%3E"); }
+.route-step { display:flex; gap:.75rem; align-items:center; opacity:.42; font-family:"IBM Plex Mono",monospace; font-size:10px; text-transform:uppercase; letter-spacing:.08em; }
+.route-step + .route-step { position:relative; }.route-step + .route-step::before { content:""; position:absolute; left:.55rem; bottom:calc(100% + .4rem); height:1rem; border-left:1px dashed rgba(255,255,255,.2); }
+.route-step span { display:grid; height:1.3rem; width:1.3rem; place-items:center; border:1px solid rgba(255,255,255,.2); }.route-step.active { opacity:1; color:#b8f6ff; }
+.route-step b { display:block; color:#f5f5f4; font-size:11px; }.route-step small { display:block; margin-top:.15rem; color:#a8a29e; font-size:9px; text-transform:none; letter-spacing:0; }
+.field-label { display:flex; flex-direction:column; gap:.45rem; font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.13em; text-transform:uppercase; color:#a8a29e; }
+.field-label select { appearance:none; width:100%; background:#151513; border:1px solid rgba(255,255,255,.15); padding:.72rem .85rem; color:#f5f5f4; font-family:"IBM Plex Sans",sans-serif; font-size:.9rem; text-transform:none; letter-spacing:0; outline:none; }.field-label select:focus { border-color:#9af3ff; }
+.code-panel { display:flex; min-height:270px; flex-direction:column; border:1px solid rgba(255,255,255,.13); background:#151513; }.code-panel > span { border-bottom:1px solid rgba(255,255,255,.1); padding:.65rem .8rem; font-family:"IBM Plex Mono",monospace; font-size:10px; letter-spacing:.13em; color:#a8a29e; }.code-panel textarea { min-height:220px; flex:1; resize:vertical; background:transparent; padding:.9rem; font-family:"IBM Plex Mono",monospace; font-size:12px; line-height:1.65; color:#e7e5e4; outline:none; }.code-panel.output textarea { color:#b8f6ff; }
+@media (prefers-reduced-motion:no-preference) { button, select, .route-step { transition:color .18s cubic-bezier(.23,1,.32,1), border-color .18s cubic-bezier(.23,1,.32,1), background-color .18s cubic-bezier(.23,1,.32,1), transform .16s cubic-bezier(.23,1,.32,1); } button:active { transform:scale(.97); } }
